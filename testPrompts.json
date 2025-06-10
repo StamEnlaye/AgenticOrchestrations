@@ -1,7 +1,7 @@
 [
     {
         "prompt":"Display information in a table",
-        "value":"0"
+        "value":"no"
     },
     {
         "prompt":"Display information as bullet points",
