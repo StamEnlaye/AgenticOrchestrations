@@ -1,14 +1,15 @@
 import json
 import sys
 import time
+import re
 import argparse
 import ollama
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 
-SYSTEM_MSG = (
+message = (
     # --- task -------------------------------------------------------------- #
-    "You are an API, **not** a chatbot.\n"
+    "You are an API, not a chatbot.\n"
     "Task: For each user prompt decide if it is a QUERY that asks to locate or "
     "retrieve one or more contract clauses (return true) OR an instruction / "
     "formatting / summarising / translating request that is *not* a retrieval "
@@ -17,7 +18,7 @@ SYSTEM_MSG = (
     'Return **exactly one line** of JSON with a single key named "value" and a '
     "lower-case boolean.  Only allowed forms:\n"
     '  {"value": true}\n'
-    '  {"value": false}\n\n'
+    '  {"value": false}'
     "No other keys. No arrays. No markdown fences, numbers, tables, or text."
 )
 
@@ -31,7 +32,7 @@ FEWSHOT = [
 def getAns(model: str, prompt: str) -> int:
     """Return 1 (true), 0 (false), or -1 if output is malformed."""
     messages = [
-        {"role": "system", "content": SYSTEM_MSG},
+        {"role": "system", "content": message},
         *FEWSHOT,
         {"role": "user", "content": prompt},
     ]
@@ -47,21 +48,22 @@ def getAns(model: str, prompt: str) -> int:
 
     try:
         val = json.loads(resp)["value"]
-        return 1 if val is True else 0
+        if (isinstance(val, bool) and val) or (isinstance(val, str) and val.lower().startswith("true")):
+            return 1
+        elif (isinstance(val, bool) and not val) or (isinstance(val, str) and val.lower().startswith("false")):
+            return 0
     except Exception:
         print("Unrecognized output:", resp)
         return -1
 
 
 def main(argv):
-    parser = argparse.ArgumentParser(
-        description="Evaluate LLM on query vs non-query classification."
-    )
-    parser.add_argument("model", help="Ollama model name (e.g. mistral)")
-    parser.add_argument("json_file", help="Path to prompts JSON")
-    args = parser.parse_args(argv)
+    if len(argv) != 2:
+        print("Usage: python3 script.py <model_name> <prompts.json>")
+        sys.exit(1)
 
-    with open(args.json_file, "r") as fh:
+    model_name, json_path = argv
+    with open(json_path, "r") as fh:
         rows = json.load(fh)
 
     truth, model, skipped = [], [], 0
@@ -73,7 +75,8 @@ def main(argv):
             continue
 
         trueVal = 1 if row["value"] else 0
-        modelAns = getAns(args.model, row["prompt"])
+        
+        modelAns = getAns(model_name, row["prompt"])
 
         if modelAns == -1:
             skipped += 1
@@ -89,7 +92,7 @@ def main(argv):
         prec = precision_score(truth, model, zero_division=0)
         rec  = recall_score(truth, model, zero_division=0)
 
-        print(f"\nModel: {args.model}")
+        print(f"\nModel: {model_name}")
         print(f"Accuracy : {acc:.2f}")
         print(f"Precision: {prec:.2f}")
         print(f"Recall   : {rec:.2f}")
