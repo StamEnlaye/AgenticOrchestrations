@@ -5,6 +5,7 @@ import re
 import argparse
 import ollama
 from sklearn.metrics import accuracy_score, precision_score, recall_score
+import os
 
 
 message = (
@@ -24,11 +25,13 @@ message = (
 
 
 FEWSHOT = [
-    {"role": "user",      "content": "Is there a cap of liability?"},
+    {"role": "user", "content": "Is there a cap of liability?"},
     {"role": "assistant", "content": '{"value": true}'},
 ]
 
-def parse(modelAns:str) -> int:
+
+def parse(raw: str) -> int:
+    modelAns = raw
     modelAns = modelAns.strip()
     if modelAns.startswith("```"):
         modelAns = modelAns.strip("` \n")
@@ -43,10 +46,12 @@ def parse(modelAns:str) -> int:
     modelAns = modelAns.lower().split()[0]
     if modelAns in {"true", "yes"}:
         return 1
-    if modelAns in {"false", "no"}:
+    elif modelAns in {"false", "no"}:
         return 0
+    else:
+        print( f"Skipped row: {raw}")
+        return -1
 
-    return -1
 
 def getAns(model: str, prompt: str) -> int:
     messages = [
@@ -54,13 +59,19 @@ def getAns(model: str, prompt: str) -> int:
         *FEWSHOT,
         {"role": "user", "content": prompt},
     ]
-    resp = ollama.chat(
-        model=model,
-        messages=messages,
-        options={"temperature": 0}
-    )["message"]["content"].strip()
+    resp = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=False)[
+        "message"
+    ]["content"].strip()
 
-    return parse(resp)
+    val = parse(resp)
+    if val == -1:
+        print("Parsing unsuccessful. Trying with temperature 1")
+        resp = ollama.chat(model=model, messages=messages, options={"temperature": 1})[
+            "message"
+        ]["content"].strip()
+        return parse(resp)
+
+    return val
 
 
 def main(argv):
@@ -81,7 +92,7 @@ def main(argv):
             continue
 
         trueVal = 1 if row["value"] else 0
-        
+
         modelAns = getAns(model_name, row["prompt"])
 
         if modelAns == -1:
@@ -94,9 +105,9 @@ def main(argv):
     elapsed = time.time() - t0
 
     if truth:
-        acc  = accuracy_score(truth, model)
+        acc = accuracy_score(truth, model)
         prec = precision_score(truth, model, zero_division=0)
-        rec  = recall_score(truth, model, zero_division=0)
+        rec = recall_score(truth, model, zero_division=0)
 
         print(f"\nModel: {model_name}")
         print(f"Accuracy : {acc:.2f}")
@@ -108,6 +119,7 @@ def main(argv):
             print(f"Skipped rows        : {skipped}")
     else:
         print("No valid predictions to score.")
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
