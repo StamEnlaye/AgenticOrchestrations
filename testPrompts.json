@@ -1,14 +1,14 @@
 [
     {
-        "prompt":"Is there a cap of liability?",
+        "prompt":"Is there a cap of liability",
         "value":true
     },
     {
-        "prompt":"What are the liquidated damages?",
+        "prompt":"Who is this agreement between",
         "value":true
     },
     {
-        "prompt":"Display information in a table",
+        "prompt":"What are the liquidated damages",
         "value":true
     },
     {
@@ -64,7 +64,7 @@
         "value":false
     },
     {
-        "prompt":"Highlight all deadline clauses",
+        "prompt":"Format in 3 sentence long paragraphs",
         "value":false
     },
     {
