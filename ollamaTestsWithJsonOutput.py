@@ -28,33 +28,39 @@ FEWSHOT = [
     {"role": "assistant", "content": '{"value": true}'},
 ]
 
+def parse(modelAns:str) -> int:
+    modelAns = modelAns.strip()
+    if modelAns.startswith("```"):
+        modelAns = modelAns.strip("` \n")
+    m = re.search(r"\{[^{}]*\}", modelAns, flags=re.S)
+    if m:
+        try:
+            obj = json.loads(m.group(0))
+            if isinstance(obj, dict) and "value" in obj:
+                return 1 if obj["value"] else 0
+        except json.JSONDecodeError:
+            pass
+    modelAns = modelAns.lower().split()[0]
+    if modelAns in {"true", "yes"}:
+        return 1
+    if modelAns in {"false", "no"}:
+        return 0
+
+    return -1
 
 def getAns(model: str, prompt: str) -> int:
-    """Return 1 (true), 0 (false), or -1 if output is malformed."""
     messages = [
         {"role": "system", "content": message},
         *FEWSHOT,
         {"role": "user", "content": prompt},
     ]
-
     resp = ollama.chat(
         model=model,
         messages=messages,
         options={"temperature": 0}
     )["message"]["content"].strip()
 
-    if resp.startswith("```"):
-        resp = resp.strip("` \n")
-
-    try:
-        val = json.loads(resp)["value"]
-        if (isinstance(val, bool) and val) or (isinstance(val, str) and val.lower().startswith("true")):
-            return 1
-        elif (isinstance(val, bool) and not val) or (isinstance(val, str) and val.lower().startswith("false")):
-            return 0
-    except Exception:
-        print("Unrecognized output:", resp)
-        return -1
+    return parse(resp)
 
 
 def main(argv):
