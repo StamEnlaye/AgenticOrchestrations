@@ -44,9 +44,9 @@ def chat(model, prompt, size):
         *FEWSHOT,
         {"role": "user", "content": prompt_block}
     ]
-    response = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=False)
+    response = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=True)
     content = response['message']['content'].strip().lower()
-
+    print(f"\nAnswer: {content}")
     results = []
     for i in range(1, size + 1):
         match = next((line for line in content.splitlines() if line.startswith(f"{i}.")), None)
@@ -96,11 +96,11 @@ if __name__ == "__main__":
 
     filtered = []
     for item in data:
-        value = str(item['value']).strip().lower()
-        if value == "yes":
-            filtered.append((item['prompt'], 1))
-        elif value == "no":
-            filtered.append((item['prompt'], 0))
+        value = item['value']
+        if isinstance(value, bool):
+            label = 1 if value else 0
+            filtered.append((item["prompt"], label))
+            continue
 
     start_time = time.time()
     acc, prec, rec = run_once(model_name, filtered, 10)
