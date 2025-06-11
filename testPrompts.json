@@ -1,82 +1,82 @@
 [
     {
-        "prompt":"Display information in a table",
-        "value":"no"
-    },
-    {
-        "prompt":"Display information as bullet points",
-        "value":"no"
-    },
-    {
-        "prompt":"Show everything in list format",
-        "value":"no"
-    },
-    {
-        "prompt":"Sort information by risk type",
-        "value":"no"
-    },
-    {
-        "prompt":"Give me the output in a markdown table",
-        "value":"no"
-    },
-    {
-        "prompt":"Can you organize the output by clause length?",
-        "value":"no"
-    },
-    {
-        "prompt":"Highlight all deadline clauses",
-        "value":"no"
-    },
-    {
-        "prompt":"Translate this section to Spanish",
-        "value":"no"
-    },
-    {
-        "prompt":"Summarize the information in 2 sentences",
-        "value":"no"
-    },
-    {
-        "prompt":"Display clauses used in a numbered list",
-        "value":"no"
-    },
-    {
         "prompt":"Is there a cap of liability?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"What are the liquidated damages?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"Display information in a table",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"When is the contract start date?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"What is the project delivery date?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"Are there any clauses about subcontracting?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"Is insurance required?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"Is there a clause 5.3.2?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"How are delays due to weather handled?",
-        "value":"yes"
+        "value":true
     },
     {
         "prompt":"What types of bonds are required?",
-        "value":"yes"
+        "value":true
+    },
+    {
+        "prompt":"Display information in a table",
+        "value":false
+    },
+    {
+        "prompt":"Display information as bullet points",
+        "value":false
+    },
+    {
+        "prompt":"Show everything in list format",
+        "value":false
+    },
+    {
+        "prompt":"Sort information by risk type",
+        "value":false
+    },
+    {
+        "prompt":"Give me the output in a markdown table",
+        "value":false
+    },
+    {
+        "prompt":"Can you organize the output by clause length?",
+        "value":false
+    },
+    {
+        "prompt":"Highlight all deadline clauses",
+        "value":false
+    },
+    {
+        "prompt":"Translate this section to Spanish",
+        "value":false
+    },
+    {
+        "prompt":"Summarize the information in 2 sentences",
+        "value":false
+    },
+    {
+        "prompt":"Display clauses used in a numbered list",
+        "value":false
     }
 ]
