@@ -1,124 +1,115 @@
 import json
 import sys
 import time
-import re
 import ollama
-from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 
-
+# Prompt instructions
 message = (
-    # --- task -------------------------------------------------------------- #
     "You are an API, not a chatbot.\n"
-    "Task: For each user prompt decide if it is a QUERY that asks to locate or "
-    "retrieve one or more contract clauses (return true) OR an instruction / "
+    "Task: I will give you a list of 20 prompts. For each user prompt decide if it is a QUERY that asks to locate or "
+    "retrieve one or more contract clauses (return yes) OR an instruction / "
     "formatting / summarizing / translating request that is *not* a retrieval "
-    "query (return false).\n\n"
-    # --- output rules ------------------------------------------------------ #
-    'Return **exactly one line** of JSON with a single key named "value" and a '
-    "lower-case boolean.  Only allowed forms:\n"
-    '  {"value": true}\n'
-    '  {"value": false}'
-    "No other keys. No arrays. No markdown fences, numbers, tables, or text."
+    "query (return no).\n\n"
+    "Return exactly 20 lines, numbered 1 through 20, with each line containing either 'yes' or 'no'.\n"
+    "Only allowed forms:\n"
+    "  1. yes\n"
+    "  2. no\n"
+    "  3. yes\n"
+    "  ... and so on up to line 20.\n"
+    "No JSON. No extra commentary. No markdown, bullets, or formatting — just the numbered list of responses."
 )
-
-
 FEWSHOT = [
-    {"role": "user", "content": "Is there a cap of liability?"},
-    {"role": "assistant", "content": '{"value": true}'},
+    {
+        "role": "user",
+        "content": (
+            "1. Summarize the information in 2 sentences\n"
+            "2. Is there a cap of liability?\n"
+            "3. Display clauses used in a numbered list"
+
+        )
+    },
+    {
+        "role": "assistant",
+        "content": (
+            "1. no\n"
+            "2. yes\n"
+            "3. no"
+        )
+    }
 ]
 
 
-def parse(raw: str) -> int:
-    print(f"\nAnswer: {raw}")
-    modelAns = raw
-    modelAns = modelAns.strip()
-    if modelAns.startswith("```"):
-        modelAns = modelAns.strip("` \n")
-    m = re.search(r"\{[^{}]*\}", modelAns, flags=re.S)
-    if m:
-        try:
-            obj = json.loads(m.group(0))
-            if isinstance(obj, dict) and "value" in obj:
-                return 1 if obj["value"] else 0
-        except json.JSONDecodeError:
-            pass
-    modelAns = modelAns.lower().split()[0]
-    if modelAns in {"true", "yes"}:
-        return 1
-    elif modelAns in {"false", "no"}:
-        return 0
-    else:
-        print( f"Skipped row: {raw}")
-        return -1
-
-
-def getAns(model: str, prompt: str) -> int:
+def chat(model, prompt, size):
+    prompt_block = "\n".join([f"{i+1}. {p}" for i, p in enumerate(prompt)])
     messages = [
         {"role": "system", "content": message},
         *FEWSHOT,
-        {"role": "user", "content": prompt},
+        {"role": "user", "content": prompt_block}
     ]
-    resp = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=False)[
-        "message"
-    ]["content"].strip()
+    response = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=False)
+    content = response['message']['content'].strip().lower()
+    print(f"\nAnswer: {content}")
+    results = []
+    for i in range(1, size + 1):
+        match = next((line for line in content.splitlines() if line.startswith(f"{i}.")), None)
+        if match:
+            if "yes" in match:
+                results.append(1)
+            elif "no" in match:
+                results.append(0)
+            else:
+                results.append(-1)
+        else:
+            results.append(-1)
+    return results
 
-    val = parse(resp)
-    if val == -1:
-        print("Parsing unsuccessful. Trying with temperature 1")
-        resp = ollama.chat(model=model, messages=messages, options={"temperature": 1})[
-            "message"
-        ]["content"].strip()
-        return parse(resp)
+def run_once(model_name, filtered, size):
+    truth = []
+    modelAnswers = []
 
-    return val
+    for i in range(0, len(filtered), size):
+        chunk = filtered[i:i+size]
+        if len(chunk) < size:
+            continue
+        prompts = [item[0] for item in chunk]
+        labels = [item[1] for item in chunk]
 
-
-def main(argv):
-    if len(argv) != 2:
-        print("Usage: python3 script.py <model_name> <prompts.json>")
-        sys.exit(1)
-
-    model_name, json_path = argv
-    with open(json_path, "r") as fh:
-        rows = json.load(fh)
-
-    truth, model, skipped = [], [], 0
-    t0 = time.time()
-
-    for row in rows:
-        if not isinstance(row.get("value"), bool):
-            skipped += 1
+        preds = chat(model_name, prompts, size)
+        if len(preds) != size:
+            print("Skipping chunk due to unexpected output length.")
             continue
 
-        trueVal = 1 if row["value"] else 0
+        for pred, label in zip(preds, labels):
+            if pred != -1:
+                truth.append(label)
+                modelAnswers.append(pred)
 
-        modelAns = getAns(model_name, row["prompt"])
-
-        if modelAns == -1:
-            skipped += 1
-            continue
-
-        truth.append(trueVal)
-        model.append(modelAns)
-
-    elapsed = time.time() - t0
-
-    if truth:
-        acc = accuracy_score(truth, model)
-        prec = precision_score(truth, model, zero_division=0)
-        rec = recall_score(truth, model, zero_division=0)
-
-        print(f"\nModel: {model_name}")
-        print(f"Accuracy : {acc:.2f}")
-        print(f"Precision: {prec:.2f}")
-        print(f"Recall   : {rec:.2f}")
-        print(f"Total time          : {elapsed:.2f} s")
-        print(f"Average time/prompt : {elapsed/len(truth):.2f} s")
-        if skipped:
-            print(f"Skipped rows        : {skipped}")
-    else:
-        print("No valid predictions to score.")
-
+    acc = accuracy_score(truth, modelAnswers)
+    prec = precision_score(truth, modelAnswers)
+    rec = recall_score(truth, modelAnswers)
+    return acc, prec, rec
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    model_name = sys.argv[1]
+    json_path = sys.argv[2]
+
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+
+    filtered = []
+    for item in data:
+        value = item['value']
+        if isinstance(value, bool):
+            label = 1 if value else 0
+            filtered.append((item["prompt"], label))
+            continue
+
+    start_time = time.time()
+    acc, prec, rec = run_once(model_name, filtered, 20)
+    duration = time.time() - start_time
+
+    print(f"Runtime:   {duration:.2f} seconds")
+    print(f"Accuracy:  {acc:.2f}")
+    print(f"Precision: {prec:.2f}")
+    print(f"Recall:    {rec:.2f}")

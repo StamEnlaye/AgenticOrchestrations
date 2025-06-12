@@ -20,11 +20,23 @@
         "value":false
     },
     {
+        "prompt":"All information about Definition Phase Target Schedule",
+        "value":true
+    },
+    {
+        "prompt":"Help me understand the technical specifications and requirements for the project, including materials, equipment, and methods.",
+        "value":true
+    },
+    {
         "prompt":"Sort information by risk type",
         "value":false
     },
     {
         "prompt":"What are the liquidated damages?",
+        "value":true
+    },
+    {
+        "prompt":"What are we aiming to design in this project",
         "value":true
     },
     {
@@ -64,6 +76,10 @@
         "value":false
     },
     {
+        "prompt":"After displaying the information, list all clauses that were used.",
+        "value":true
+    },
+    {
         "prompt":"Is insurance required?",
         "value":true
     },
@@ -77,6 +93,14 @@
     },
     {
         "prompt":"What types of bonds are required?",
+        "value":true
+    },
+    {
+        "prompt":"Is there anything in the contract that I should be concerned about",
+        "value":true
+    },
+    {
+        "prompt":"All information about schedule management plan",
         "value":true
     }
 

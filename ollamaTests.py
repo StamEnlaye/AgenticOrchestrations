@@ -21,11 +21,12 @@ def chat(model, prompt):
     response = ollama.chat(model=model, messages=messages)
     content = response['message']['content'].strip().lower()
 
-    if content.startswith("yes"):
+    if content.startswith("yes") or content.startswith("Yes"):
         return 1
-    elif content.startswith("no"):
+    elif content.startswith("no") or content.startswith("No"):
         return 0
     else:
+        print("skipping")
         return -1
 
 if __name__ == "__main__":

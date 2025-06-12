@@ -2,76 +2,108 @@ import json
 import sys
 import time
 import re
-import argparse
 import ollama
 from sklearn.metrics import accuracy_score, precision_score, recall_score
-import os
 
+SYS_PROMPT = """\
+You are an API, not a chatbot.
+Task: For each user prompt, decide if it is a QUERY that asks to locate or retrieve one or more contract clauses (return true) OR an instruction/formatting/summarizing/translating request that is NOT a retrieval query (return false).
 
-message = (
-    # --- task -------------------------------------------------------------- #
-    "You are an API, not a chatbot.\n"
-    "Task: For each user prompt decide if it is a QUERY that asks to locate or "
-    "retrieve one or more contract clauses (return true) OR an instruction / "
-    "formatting / summarising / translating request that is *not* a retrieval "
-    "query (return false).\n\n"
-    # --- output rules ------------------------------------------------------ #
-    'Return **exactly one line** of JSON with a single key named "value" and a '
-    "lower-case boolean.  Only allowed forms:\n"
-    '  {"value": true}\n'
-    '  {"value": false}'
-    "No other keys. No arrays. No markdown fences, numbers, tables, or text."
-)
+Output format (exactly one line, valid JSON, no extra text, no markdown fences):
+{"value": true}
+{"value": false}
+"""
 
+CHECKER_SYS = """\
+You are a verification assistant. Your job is to check whether the previous assistant correctly performed the following task:
+
+Task: For each user prompt, decide if it is a QUERY that asks to locate or retrieve one or more contract clauses (return true)  
+OR an instruction/formatting/summarizing/translating request that is NOT a retrieval query (return false).
+
+Now you will be given:
+  1) the original user prompt  
+  2) the assistant's output  
+
+Validate two things:
+  • Logical correctness: that “value” matches the right answer for this prompt  
+  • Formatting correctness: exactly one line of valid JSON, a single key "value" with a lowercase boolean, no extra keys, no markdown fences, no commentary
+
+If both are OK, return the output unchanged.  
+If the format is wrong but the label is correct, strip away extra characters.  
+If the label is wrong, correct it to the proper boolean.  
+
+Return exactly one line and nothing else.
+"""
 
 FEWSHOT = [
     {"role": "user", "content": "Is there a cap of liability?"},
     {"role": "assistant", "content": '{"value": true}'},
+    {"role": "user", "content": "Summarize the agreement in two lines."},
+    {"role": "assistant", "content": '{"value": false}'},
 ]
+
+def checkerPrompt(prompt: str, previous_output: str) -> str:
+    """
+    Builds the user message for the checker by embedding the
+    original prompt and the assistant's output.
+    """
+    return (
+        f"Original user prompt:\n\"{prompt}\"\n\n"
+        f"Assistant output:\n{previous_output}\n\n"
+        f"Please apply the rules from the system message."
+    )
+
+
+def call_llama(model: str, messages: list) -> str:
+    """Wraps ollama.chat and returns the assistant's raw text output."""
+    resp = ollama.chat(
+        model=model, messages=messages, options={"temperature": 0}, think=False
+    )["message"]["content"]
+    return resp.strip()
 
 
 def parse(raw: str) -> int:
-    modelAns = raw
-    modelAns = modelAns.strip()
-    if modelAns.startswith("```"):
-        modelAns = modelAns.strip("` \n")
-    m = re.search(r"\{[^{}]*\}", modelAns, flags=re.S)
+    """
+    Parses {"value": true/false} from a string.
+    Returns 1 for true, 0 for false, -1 if no valid JSON found.
+    """
+    m = re.search(r"\{[^{}]*\}", raw)
     if m:
         try:
             obj = json.loads(m.group(0))
-            if isinstance(obj, dict) and "value" in obj:
-                return 1 if obj["value"] else 0
+            if obj.get("value") is True:
+                return 1
+            if obj.get("value") is False:
+                return 0
         except json.JSONDecodeError:
             pass
-    modelAns = modelAns.lower().split()[0]
-    if modelAns in {"true", "yes"}:
+    token = raw.lower().split()[0]
+    if token in {"true", "yes"}:
         return 1
-    elif modelAns in {"false", "no"}:
+    if token in {"false", "no"}:
         return 0
-    else:
-        print( f"Skipped row: {raw}")
-        return -1
+    return -1
 
 
-def getAns(model: str, prompt: str) -> int:
+def classify_and_check(model: str, prompt: str) -> int:
+    # 1) Primary classification
     messages = [
-        {"role": "system", "content": message},
+        {"role": "system", "content": SYS_PROMPT},
         *FEWSHOT,
         {"role": "user", "content": prompt},
     ]
-    resp = ollama.chat(model=model, messages=messages, options={"temperature": 0}, think=False)[
-        "message"
-    ]["content"].strip()
+    primary = call_llama(model, messages)
+    print(f"First output: {primary}\n")
 
-    val = parse(resp)
-    if val == -1:
-        print("Parsing unsuccessful. Trying with temperature 1")
-        resp = ollama.chat(model=model, messages=messages, options={"temperature": 1})[
-            "message"
-        ]["content"].strip()
-        return parse(resp)
-
-    return val
+    # 2) Format verification
+    checker_msgs = [
+    {"role": "system",  "content": CHECKER_SYS},
+    {"role": "user",    "content": checkerPrompt(prompt, primary)},
+    ]
+    verified = call_llama(model, checker_msgs)
+    print(f"Second output: {verified}\n")
+    # 3) Parse final JSON
+    return parse(verified)
 
 
 def main(argv):
@@ -79,31 +111,24 @@ def main(argv):
         print("Usage: python3 script.py <model_name> <prompts.json>")
         sys.exit(1)
 
-    model_name, json_path = argv
-    with open(json_path, "r") as fh:
+    model_name, path = argv
+    with open(path) as fh:
         rows = json.load(fh)
 
-    truth, model, skipped = [], [], 0
     t0 = time.time()
+    truth, model, incorrect = [], [], []
 
     for row in rows:
-        if not isinstance(row.get("value"), bool):
-            skipped += 1
-            continue
 
         trueVal = 1 if row["value"] else 0
-
-        modelAns = getAns(model_name, row["prompt"])
-
-        if modelAns == -1:
-            skipped += 1
-            continue
+        modelAns = classify_and_check(model_name, row["prompt"])
 
         truth.append(trueVal)
         model.append(modelAns)
+        if modelAns != trueVal:
+            incorrect.append(row["prompt"])
 
     elapsed = time.time() - t0
-
     if truth:
         acc = accuracy_score(truth, model)
         prec = precision_score(truth, model, zero_division=0)
@@ -113,12 +138,13 @@ def main(argv):
         print(f"Accuracy : {acc:.2f}")
         print(f"Precision: {prec:.2f}")
         print(f"Recall   : {rec:.2f}")
-        print(f"Total time          : {elapsed:.2f} s")
-        print(f"Average time/prompt : {elapsed/len(truth):.2f} s")
-        if skipped:
-            print(f"Skipped rows        : {skipped}")
+        print(f"Time total        : {elapsed:.2f}s")
+        print(f"Time per prompt   : {elapsed/len(truth):.2f}s")
     else:
         print("No valid predictions to score.")
+
+    for p in incorrect:
+        print(f"Incorrect: {p}")
 
 
 if __name__ == "__main__":
