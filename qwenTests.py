@@ -14,12 +14,40 @@ Output format (exactly one line, valid JSON, no extra text, no markdown fences):
 {"value": true}
 {"value": false}
 """
+keywordSys = """\
+You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. 
+Task: for each prompt, return a valid JSON that extracts 5 keywords from the prompt that will be the most helpful to search for during the retrieval process. 
+If there are less than 5 keywords in the prompt, generate the remaining keyword(s) as synonyms or possible related words that could be helpful during the retrieval process.
+Output format(exactly one line, valid JSON, no extra text, no markdown fences):
+{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}
+
+"""
+subquerySys = """\
+You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. 
+Task: for each prompt, return a valid JSON that extracts 5 keywords from the prompt that will be the most helpful to search for during the retrieval process. 
+If there are less than 5 keywords in the prompt, generate the remaining keyword(s) as synonyms or possible related words that could be helpful during the retrieval process.
+Output format(exactly one line, valid JSON, no extra text, no markdown fences):
+{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}
+
+"""
+
+
 
 FEWSHOT = [
     {"role": "user", "content": "Is there a cap of liability?"},
     {"role": "assistant", "content": '{"value": true}'},
     {"role": "user", "content": "Summarize the agreement in two lines."},
     {"role": "assistant", "content": '{"value": false}'},
+]
+fewshotKeyword = [
+    {"role": "user", "content": "What are the liquidated damages?"},
+    {"role": "assistant", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
+
+]
+fewshotSubquery = [
+    {"role": "user", "content": "What are the liquidated damages?"},
+    {"role": "assistant", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
+
 ]
 
 def call_llama(model: str, messages: list) -> str:
@@ -57,7 +85,22 @@ def classify_and_check(model: str, prompt: str):
     ]
     primary = call_llama(model, messages)
 
-    return parse(primary), primary
+    messagesKeyword= [
+        {"role": "system", "content": keywordSys},
+        *fewshotKeyword,
+        {"role": "user", "content": prompt},
+    ]
+    keyword = ""
+    if parse(primary) == 1:
+        keyword = call_llama(model,messagesKeyword)
+
+    messagesSubQuery= [
+        {"role": "system", "content": subquerySys},
+        *fewshotSubquery,
+        {"role": "user", "content": prompt},
+    ]
+    subquery = call_llama(model,messagesSubQuery)
+    return parse(primary), primary, keyword, subquery
 
 
 def main(argv):
@@ -71,15 +114,16 @@ def main(argv):
 
     truth, model = [], []
     prompts, ground_truths = [], []
-    primary_outputs, verified_outputs = [], []
+    primary_outputs, keywords = [], []
 
     t0 = time.time()
     for row in rows:
         prompt = row["prompt"]
         gt = 'true' if row["value"] else 'false'
 
-        parsed, primary_raw= classify_and_check(model_name, prompt)
-
+        parsed, primary_raw, keyword, subquery = classify_and_check(model_name, prompt)
+        if keyword:
+            keywords.append(keyword)
         prompts.append(prompt)
         ground_truths.append(gt)
         primary_outputs.append(primary_raw)
@@ -104,11 +148,16 @@ def main(argv):
         print(f"| {model_name} | {acc:.2f} | {prec:.2f} | {rec:.2f} | {elapsed:.2f} | {elapsed/len(filt_truth):.2f} |")
 
         # Markdown table 2: per-prompt results
-        print(f"\n| Prompt | Ground Truth | Primary Output |")
-        print("|---|---|---|")
-        for i in valid_indices:
-            p = prompts[i].replace('|', '\\|')
-            print(f"| {p} | {ground_truths[i]} | {primary_outputs[i]} |")
+        # print(f"\n| Prompt | Ground Truth | Primary Output |")
+        # print("|---|---|---|")
+        # for i in valid_indices:
+        #     p = prompts[i].replace('|', '\\|')
+        #     print(f"| {p} | {ground_truths[i]} | {primary_outputs[i]} |")
+        # Keyword Display
+        for kw in keywords:
+            print(f"\n Keyword extractor: {kw}")
+        for quer in subquery:
+            print(f"\n Subqueries: {quer}")
     else:
         print("No valid predictions to score.")
 
