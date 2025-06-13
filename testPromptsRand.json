@@ -77,7 +77,7 @@
     },
     {
         "prompt":"After displaying the information, list all clauses that were used.",
-        "value":true
+        "value":false
     },
     {
         "prompt":"Is insurance required?",
