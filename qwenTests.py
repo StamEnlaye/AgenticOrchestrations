@@ -17,22 +17,23 @@ Output format (exactly one line, valid JSON, no extra text, no markdown fences):
 keywordSys = """\
 You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. 
 Task: for each prompt, return a valid JSON that extracts 5 keywords from the prompt that will be the most helpful to search for during the retrieval process. 
-If there are less than 5 keywords in the prompt, generate the remaining keyword(s) as synonyms or possible related words that could be helpful during the retrieval process.
+If there are less than 5 keywords in the prompt, generate the remaining keyword(s) based on the fact that 
+key words you are generating will be used to create subqueries that will be used as search probes for the retrieval process.
 Output format(exactly one line, valid JSON, no extra text, no markdown fences):
-{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}
+{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"]}
 
 """
 subquerySys = """\
 You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. You will also be given 5 associated keywords. 
-The keywords will either be directly extracted from the user prompt, or chosen by using the user prompt to generate words related to the query.
-All keywords will be helpful for effective retrieval of information
-Task: For each user prompt and associated keywords, generate subqueries that break the original query into steps, so that we can use the subqueries as search probes to answer the query more accurately and efficiently.
-Each subquery must contain at least 1 keyword. There is no limit to the amount of subqueries, but you should not be repetitive or break down the query into too many steps. The goal is to improve accuracy and efficiency.  
+The keywords will either be directly extracted from the user prompt, or chosen by using the user prompt to generate words related to the query.All keywords will be helpful for effective retrieval of information.
+Task: For each user prompt and associated keywords, generate subqueries that break the original query into steps, so that we can use the subqueries as search probes.
+Each subquery must contain at least 1 keyword. You should not be repetitive or break down the query into too many steps. The goal is to improve accuracy and efficiency.  
+Your subqueries will be given to a retrieval model, so they should communicate the information in the best way for a retrieval model to receive and execute.
 Output format(no extra text, no markdown fences):
 1. 'subquery 1' \n
 2. 'subquery 2'\n
 3. 'subquery 3'\n
-... and so on until the subqueries cover the entire query.
+... and so on until the subqueries cover the entire query. The fewshot you are given lists 4 subqueries but you should provide the correct amount of subqueries to cover the entire query, which may be more or less than 4.
 
 """
 
@@ -46,12 +47,11 @@ FEWSHOT = [
 ]
 fewshotKeyword = [
     {"role": "user", "content": "What are the liquidated damages?"},
-    {"role": "assistant", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
-
+    {"role": "assistant", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"]}'},
 ]
 fewshotSubquery = [
-    {"role": "user", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
-    {"role": "assistant", "content": "1. 'Find the clause defining liquidated damages'\n2. 'Locate any penalty provisions related to damages'\n3. 'Extract compensation terms specified for damages'\n4. 'Retrieve the full clause text concerning liquidated damages'"}
+    {"role": "user", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"]}'},
+    {"role": "assistant", "content": "1. 'Find the clause defining liquidated damages'\n2. 'Locate any penalty provisions related to damages'\n3. 'Extract compensation terms specified for damages'\n4. 'Extract numerical examples illustrating liquidated damages calculation'"}
 ]
 
 
@@ -88,7 +88,7 @@ def classify_and_check(model: str, prompt: str):
         *FEWSHOT,
         {"role": "user", "content": prompt},
     ]
-    primary = call_llama(model, messages)
+    primary = call_llama("qwen3:4b", messages)
 
     messagesKeyword= [
         {"role": "system", "content": keywordSys},
