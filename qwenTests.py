@@ -23,11 +23,16 @@ Output format(exactly one line, valid JSON, no extra text, no markdown fences):
 
 """
 subquerySys = """\
-You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. 
-Task: for each prompt, return a valid JSON that extracts 5 keywords from the prompt that will be the most helpful to search for during the retrieval process. 
-If there are less than 5 keywords in the prompt, generate the remaining keyword(s) as synonyms or possible related words that could be helpful during the retrieval process.
-Output format(exactly one line, valid JSON, no extra text, no markdown fences):
-{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}
+You are a helpful assistant. You will be given a user prompt that will be used as a search probe to retrieve information from contracts related to construction. You will also be given 5 associated keywords. 
+The keywords will either be directly extracted from the user prompt, or chosen by using the user prompt to generate words related to the query.
+All keywords will be helpful for effective retrieval of information
+Task: For each user prompt and associated keywords, generate subqueries that break the original query into steps, so that we can use the subqueries as search probes to answer the query more accurately and efficiently.
+Each subquery must contain at least 1 keyword. There is no limit to the amount of subqueries, but you should not be repetitive or break down the query into too many steps. The goal is to improve accuracy and efficiency.  
+Output format(no extra text, no markdown fences):
+1. 'subquery 1' \n
+2. 'subquery 2'\n
+3. 'subquery 3'\n
+... and so on until the subqueries cover the entire query.
 
 """
 
@@ -45,10 +50,10 @@ fewshotKeyword = [
 
 ]
 fewshotSubquery = [
-    {"role": "user", "content": "What are the liquidated damages?"},
-    {"role": "assistant", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
-
+    {"role": "user", "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","clause"]}'},
+    {"role": "assistant", "content": "1. 'Find the clause defining liquidated damages'\n2. 'Locate any penalty provisions related to damages'\n3. 'Extract compensation terms specified for damages'\n4. 'Retrieve the full clause text concerning liquidated damages'"}
 ]
+
 
 def call_llama(model: str, messages: list) -> str:
     resp = ollama.chat(
@@ -91,15 +96,16 @@ def classify_and_check(model: str, prompt: str):
         {"role": "user", "content": prompt},
     ]
     keyword = ""
+    subquery = ""
     if parse(primary) == 1:
         keyword = call_llama(model,messagesKeyword)
+        messagesSubQuery= [
+            {"role": "system", "content": subquerySys},
+            *fewshotSubquery,
+            {"role": "user", "content": keyword},
+        ]
+        subquery = call_llama(model,messagesSubQuery)
 
-    messagesSubQuery= [
-        {"role": "system", "content": subquerySys},
-        *fewshotSubquery,
-        {"role": "user", "content": prompt},
-    ]
-    subquery = call_llama(model,messagesSubQuery)
     return parse(primary), primary, keyword, subquery
 
 
@@ -114,7 +120,7 @@ def main(argv):
 
     truth, model = [], []
     prompts, ground_truths = [], []
-    primary_outputs, keywords = [], []
+    primary_outputs, keywords, subqueries = [], [], []
 
     t0 = time.time()
     for row in rows:
@@ -124,6 +130,7 @@ def main(argv):
         parsed, primary_raw, keyword, subquery = classify_and_check(model_name, prompt)
         if keyword:
             keywords.append(keyword)
+            subqueries.append(subquery)
         prompts.append(prompt)
         ground_truths.append(gt)
         primary_outputs.append(primary_raw)
@@ -154,10 +161,9 @@ def main(argv):
         #     p = prompts[i].replace('|', '\\|')
         #     print(f"| {p} | {ground_truths[i]} | {primary_outputs[i]} |")
         # Keyword Display
-        for kw in keywords:
-            print(f"\n Keyword extractor: {kw}")
-        for quer in subquery:
-            print(f"\n Subqueries: {quer}")
+        for j in range(len(keywords)):
+            print(f"\n Keyword extractor: {keywords[j]}")
+            print(f"\n Subqueries: {subqueries[j]}")
     else:
         print("No valid predictions to score.")
 
