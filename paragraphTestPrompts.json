@@ -1,0 +1,10 @@
+[
+    {
+        "prompt":"I am the contractor. The IFA won't approve my drawings and refuses to tell me why. this is causing a delay on the critical path. what can I do?",
+        "value":true
+    },
+    {
+        "prompt":"I'm considering a new build. I'm debating whether I should use steel or masonry frames. what are the cost differences, design duration, and which should I choose?",
+        "value":false
+    }
+]
