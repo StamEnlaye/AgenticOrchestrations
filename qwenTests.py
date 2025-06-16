@@ -152,14 +152,14 @@ def main(argv):
         # Markdown table 1: model metrics
         print(f"\n| Model | Accuracy | Precision | Recall | Total Time (s) | Avg Time per Prompt (s) |")
         print("|---|---|---|---|---|---|")
-        print(f"| {model_name} | {acc:.2f} | {prec:.2f} | {rec:.2f} | {elapsed:.2f} | {elapsed/len(filt_truth):.2f} |")
+        print(f"| qwen3:4b | {acc:.2f} | {prec:.2f} | {rec:.2f} | {elapsed:.2f} | {elapsed/len(filt_truth):.2f} |")
 
         # Markdown table 2: per-prompt results
-        # print(f"\n| Prompt | Ground Truth | Primary Output |")
-        # print("|---|---|---|")
-        # for i in valid_indices:
-        #     p = prompts[i].replace('|', '\\|')
-        #     print(f"| {p} | {ground_truths[i]} | {primary_outputs[i]} |")
+        print(f"\n| Prompt | Ground Truth | Primary Output |")
+        print("|---|---|---|")
+        for i in valid_indices:
+            p = prompts[i].replace('|', '\\|')
+            print(f"| {p} | {ground_truths[i]} | {primary_outputs[i]} |")
         # Keyword Display
         for j in range(len(keywords)):
             print(f"\n Keyword extractor: {keywords[j]}")
