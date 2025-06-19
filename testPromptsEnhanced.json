@@ -1,5 +1,24 @@
 [
     {
+        "prompt":"What are the consequences of delay on the critical path? also display information in a table"
+    },
+    {
+        "prompt":"What is 30% of that budget",
+        "value":false
+    },
+    {
+        "prompt":"How are delays due to weather handled? Display information as bullet points"
+    },
+    {
+        "prompt":"I am the contractor. The IFA won't approve my drawings and refuses to tell me why. this is causing a delay on the critical path. what can I do?"
+    },
+    {
+        "prompt":"I'm considering a new build. I'm debating whether I should use steel or masonry frames. what are the cost differences, design duration, and which should I choose? And please summarize in a table."
+    },
+    {
+        "prompt":"Please give me all of the information about schedule management plan"
+    },
+    {
         "prompt":"What are the consequences of delay on the critical path",
         "value":true
     },
@@ -97,10 +116,6 @@
     },
     {
         "prompt":"Is there anything in the contract that I should be concerned about",
-        "value":true
-    },
-    {
-        "prompt":"All information about schedule management plan",
         "value":true
     }
 
