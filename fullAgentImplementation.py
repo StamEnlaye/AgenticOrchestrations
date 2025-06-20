@@ -4,6 +4,31 @@ import time
 import ollama
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
+
+
+docTypeClassifierSys = (
+    "You are a preprocessing assistant that classifies the type and purpose of construction-related documents.\n\n"
+    "Task: Read the first few chunks of the document and assign exactly one document type from the list below.\n\n"
+    "Allowed types:\n"
+    "• Request for Information\n"
+    "• Change Order\n"
+    "• Contract\n"
+    "• Specification\n"
+    "• Drawing\n"
+    "• Schedule\n"
+    "• Budget\n"
+    "• Inspection Report\n"
+    "• Permit\n"
+    "• Other\n\n"
+    "Guidelines:\n"
+    "• Focus only on the initial chunks — identify the type using titles, headers, or key phrases.\n"
+    "• Choose the most dominant or explicit category if multiple seem plausible.\n"
+    "• If none of the above types match, return 'Other'.\n"
+    "• Do not return reasoning or explanation.\n"
+    "• Do not hallucinate or infer beyond what is written.\n"
+    "• Your classification will be used to attach metadata to all document chunks downstream."
+)
+
 decompSys = """\
 You are the decomposition module for a construction-contract Q&A pipeline.
 
