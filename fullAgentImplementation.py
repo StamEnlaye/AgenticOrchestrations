@@ -3,6 +3,8 @@ import sys
 import time
 import ollama
 from sklearn.metrics import accuracy_score, precision_score, recall_score
+import outlines
+
 
 
 
@@ -70,24 +72,28 @@ Output format(exactly one line, valid JSON, no extra text, no markdown fences):
 { "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"]}
 
 """
-subquerySys = """\
-You are a helpful assistant.  You will be given a user query that will be used as a search probe to retrieve information from contracts related to construction. You will also be given five associated keywords, that were either directly extracted from the query or was generated with the instruction of being a helpful keyword to search for during the retrieval process.
-Task: decompose the original query into a sequence of subqueries that will be consumed by the answer synthesizer after the retrieval process, in order to guide the answer synthesizer to output an accurate response to the query.
-Each subquery should:
+subquerySys = """
+You are an inquisitive assistant. You will be given:
+  1. An original user query about a construction contract.
+  2. Five associated keywords (either extracted from the query or chosen to guide retrieval).
 
-- Contain at least one of the provided keywords.
-- Represent a distinct piece of information the synthesizer needs to compose the final answer.
-- Be phrased clearly and concisely, without redundancy or unnecessary detail.
-- Together cover all aspects of the original query so the synthesizer can build a complete, accurate response.
+Your task is to decompose the original query into a sequence of investigative subqueries. These will act as “chain-of-thought” prompts for a RAG answer synthesizer, helping it explore every angle before composing the final answer.
 
+Each subquery must:
+  - Be phrased as an open, investigative question (e.g. “What types of liquidated damages exist?” rather than “Extract liquidated damages”).
+  - Contain at least one of the provided keywords.
+  - Represent a distinct piece of information needed to answer the overall query.
+  - Be clear and concise, without redundancy.
+  - Together cover all facets of the original query so the synthesizer can build a complete, accurate response.
 
-Output format(no extra text, no markdown fences):
-1. 'subquery 1' \n
-2. 'subquery 2'\n
-3. 'subquery 3'\n
-... and so on until the subqueries cover the entire query. The fewshot you are given lists 4 subqueries but you should provide the correct amount of subqueries to cover the entire query, which may be more or less than 4.
+Output only the numbered list of subqueries (no extra text, no markdown fences), for example:
 
+1. What types of liquidated damages are there?
+2. Is there a cap on liability for delay damages?
+3. How are delay damages typically calculated?
+...and so on until all aspects are covered.
 """
+
 fewshotDecomp = [
     # ── EXAMPLE 1 : combined context + multi-question ────────────────────────────
     {
@@ -194,38 +200,45 @@ fewshotKeyword = [
     },
 ]
 fewshotSubquery = [
+    # Example 1: liquidated damages → just the essential investigative probes
     {
         "role": "user",
-        "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"]}',
-    },
-    {
-        "role": "assistant",
-        "content": "1. 'Find the clause defining liquidated damages'\n2. 'Locate any penalty provisions related to damages'\n3. 'Extract compensation terms specified for damages'\n4. 'Extract numerical examples illustrating liquidated damages calculation'",
-    },
-    {
-        "role": "user",
-        "content": '{"prompt":"Define substantial completion in this contract.","keywords":["substantial completion","definition","completion date","certificate","milestone"]}'
+        "content": '{ "prompt": "What are the liquidated damages?", "keywords": ["liquidated","damages","penalty","compensation","calculation"] }'
     },
     {
         "role": "assistant",
         "content":
-            "1. Locate the definition of substantial completion\n"
-            "2. Extract any certificate or milestone language tied to completion date"
+            "1. What types of liquidated damages are defined in the contract?\n"
+            "2. Is there a cap or maximum on the liquidated damages penalty?\n"
+            "3. How is the compensation amount calculated for delays?\n"
+            "4. Are there any illustrative examples or formulas for calculating those damages?"
     },
 
-    # Case needing 5 probes
+    # Example 2: substantial completion → minimal focused follow-ups
     {
         "role": "user",
-        "content": '{"prompt":"Who approves a change order over $50,000?","keywords":["change order","approval","$50,000","authorization","threshold"]}'
+        "content": '{ "prompt": "Define substantial completion in this contract.", "keywords": ["substantial completion","definition","completion date","certificate","milestone"] }'
     },
     {
         "role": "assistant",
         "content":
-            "1. Find clauses stating who grants approval for a change order\n"
-            "2. Identify any dollar threshold for change order authorization\n"
-            "3. Extract roles or titles responsible for $50,000 change order approval\n"
-            "4. Retrieve procedural steps before change order authorization\n"
-            "5. Locate signature or documentation requirements for change order approval"
+            "1. How does the contract define the milestone for substantial completion?\n"
+            "2. What certificate or documentation is required to confirm that completion?"
+    },
+
+    # Example 3: change order approval → thorough investigative probes
+    {
+        "role": "user",
+        "content": '{ "prompt": "Who approves a change order over $50,000?", "keywords": ["change order","approval","$50,000","authorization","threshold"] }'
+    },
+    {
+        "role": "assistant",
+        "content":
+            "1. Which clause sets the authorization threshold for change orders?\n"
+            "2. Who is the designated approver for any change order exceeding $50,000?\n"
+            "3. What title or role holds that approval authority?\n"
+            "4. Are there procedural steps or reviews required before approval?\n"
+            "5. What documentation or signatures must accompany the approved change order?"
     }
 ]
 
