@@ -1,6 +1,33 @@
 import json
 import sys
+import time
 import ollama
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+import outlines
+
+
+docTypeClassifierSys = (
+    "You are a preprocessing assistant that classifies the type and purpose of construction-related documents.\n\n"
+    "Task: Read the first few chunks of the document and assign exactly one document type from the list below.\n\n"
+    "Allowed types:\n"
+    "• Request for Information\n"
+    "• Change Order\n"
+    "• Contract\n"
+    "• Specification\n"
+    "• Drawing\n"
+    "• Schedule\n"
+    "• Budget\n"
+    "• Inspection Report\n"
+    "• Permit\n"
+    "• Other\n\n"
+    "Guidelines:\n"
+    "• Focus only on the initial chunks — identify the type using titles, headers, or key phrases.\n"
+    "• Choose the most dominant or explicit category if multiple seem plausible.\n"
+    "• If none of the above types match, return 'Other'.\n"
+    "• Do not return reasoning or explanation.\n"
+    "• Do not hallucinate or infer beyond what is written.\n"
+    "• Your classification will be used to attach metadata to all document chunks downstream."
+)
 
 decompSys = """\
 You are the decomposition module for a construction-contract Q&A pipeline.
@@ -264,23 +291,10 @@ def print_per_prompt(prompt: str, decomp: dict):
     for n in decomp.get("noise", []):
         print(md_row(prompt, "noise", n))
 
-def fullAgents(model: str, prompt: str):
-    keywords, subqueries = [],[]
-    decomp = decompose(model,prompt)
-    if decomp and decomp.get("queries"):
-            for q in decomp["queries"]:
-                keyword = extract_keywords(model, q)
-                subq = plan_subqueries(model, keyword)
-                keywords.append((q, keyword))
-                subqueries.append((q, subq))
-
-    return keywords, subqueries 
-
-    
-
 
 def main(argv):
     if len(argv) != 2:
+        print("Usage: python3 agent.py <ollama_model_name> <prompts.json>")
         sys.exit(1)
 
     model_name, path = argv
@@ -288,6 +302,8 @@ def main(argv):
         prompts_data = json.load(fh)
 
     truth, preds, decomp_json, kw_outputs, sub_outputs = [], [], [], [], []
+    t0 = time.time()
+
     for item in prompts_data:
         prompt = item["prompt"]
         ground_truth = 1 if item.get("value") else 0
@@ -307,7 +323,33 @@ def main(argv):
                 kw_outputs.append((q, kw_json))
                 sub_outputs.append((q, subq))
 
+    elapsed = time.time() - t0
     if any(p in (0, 1) for p in preds):
+        acc = accuracy_score(truth, preds)
+        prec = precision_score(truth, preds, zero_division=0)
+        rec = recall_score(truth, preds, zero_division=0)
+
+        # --- Table 1: model metrics ---
+        # print("\n| Model | Accuracy | Precision | Recall | Total Time (s) | Avg Time per Prompt (s) |")
+        # print("|---|---|---|---|---|---|")
+        # print(f"| {model_name} | {acc:.2f} | {prec:.2f} | {rec:.2f} | {elapsed:.2f} | {elapsed/len(truth):.2f} |")
+
+        # --- Table 2: per prompt ---
+        # print("\n| Prompt | Ground Truth | Decomposer Output |")
+        # print("|---|---|---|")
+        # for (prompt, dec), pred, gt in zip(decomp_json, preds, truth):
+        #     display = json.dumps(dec, separators=(",", ":")) if dec else "Invalid JSON"
+        #     p = prompt.replace("|", "\\|")
+        #     print(f"| {p} | {'true' if gt else 'false'} | {display} |")
+        print("\n### Prompt Categories\n")
+        print("| Prompt | Category |")
+        print("|---|---|")
+        for prompt, dec in decomp_json:
+            # decide category
+            cat = "Query" if dec and dec.get("queries") else "Non-Query"
+            # escape pipes in the prompt
+            p = prompt.replace("|", "\\|")
+            print(f"| {p} | {cat} |")
 
         if kw_outputs:
             print("\n| Query | Keywords | Subqueries |")
