@@ -1,0 +1,105 @@
+query,message_id,top_sections,section_match,cosine_similarity
+"Is there a fit for purpose, fitness for purpose, fitness for the purposes, or fit for the purposes requirement or provision?",61662949-a61a-418b-b4fc-23b6896b1181,['101.54'],NO_MATCH,0.6685364842414856
+Is there a Price Adjustment Mechanism?,dd8374c7-5ba9-46dc-bf30-23d667df5744,['5.5.4'],NO_MATCH,0.7740015387535095
+How does the Price Adjustment Mechanism work?,aef7b7f4-ac9c-46e4-964f-2d6a3d751fa9,['5.10'],NO_MATCH,0.7805463075637817
+Are there any Performance Liquidated Damages? What are the various types of Performance Liquidated Damages?,2339e71c-bbbc-4046-b900-f06e6a30ab57,"['10A.4', '10A.4.2']",NO_MATCH,0.6564054489135742
+"Is there a cap specifically for Performance Liquidated Damages? If not, are the Performance Liquidated Damages uncapped?",389c5249-0acc-4dc2-898b-5db52066843d,"['10A.4', '10A.4.2', '10A.4.1']",NO_MATCH,0.6969160437583923
+Are the Performance Liquidated Damages sole and exclusive remedy?,fdcba065-83cd-4afd-b57f-88798b8fcc4d,"['10A.4', '10A.4.2']",NO_MATCH,0.5928934812545776
+Are there any Delay or Milestone Liquidated Damages? What are the various types of Delay or Milestone Liquidated Damages?,3eb3cb5c-a069-45ee-9d43-36e219d6eabb,"['10A.4.2', '10A.4']",NO_MATCH,0.7365745902061462
+"Is there a cap specifically for Delay or Milestone Liquidated Damages? If not, are the Delay or Milestone Liquidated Damages uncapped?",2a45e1cc-cab8-4ecd-86c5-abe96f957fd8,"['10A.4.2', '10A.4', '10A.4.1']",NO_MATCH,0.7328308820724487
+Are the Delay or Milestone Liquidated Damages sole and exclusive remedy?,7c551bd6-8a26-4816-a879-a55188b8c031,"['10A.4.2', '10A.4', '10A.4.1']",NO_MATCH,0.7000132203102112
+"Is there an Aggregate or Overall Cap of Liability for the Contractor? Is it an absolute value, or a percentage?",4767cb48-2fc3-448f-9771-4801a3c8a687,[],ALL_MATCHED,0.7349309325218201
+Is there an Exclusion or Waiver of Consequential Losses?,3491a0ce-8944-44a5-bca0-f07f4bfc3fe5,"['15.1.3', '15.9']",NO_MATCH,0.6612681150436401
+Is there an Exclusion or Waiver of Consequential Damages?,72458aa6-1872-4367-9e70-b78a6be2b276,['19.4.4'],ALL_MATCHED,0.7547863721847534
+Is there an Unknown or Differing Site Conditions clause (or something similar)? Which items or topics are included as part of Unknown or Differing Site Conditions?,fdf794a0-bab2-4986-969e-455a8151c2de,"['4.2', '1.3']",PARTIAL_MATCHED,0.7749974727630615
+Is there any compensation mechanism or right to claim associated with Unknown or Differing Site Conditions?,cb44c2a4-27b0-4ea2-8978-e5b79dff6e5e,"['15.7.8', '4.2', '15.15']",ALL_MATCHED,0.7186557054519653
+Is there a baseline report describing the initial state of the project site and all associated parcels of land? Is there a Geotechnical Baseline Report (GBR)?,f51e74e5-0462-466e-ba79-3a4a1e0848fa,['5.7'],ALL_MATCHED,0.7576161623001099
+Does the Contractor have the Right to Terminate the contract or project if the Client is in Default? What Client Defaults give the Contractor the right to Terminate?,581ae954-60e9-4f8b-8c25-f718fc023493,"['19.2', '19.4']",ALL_MATCHED,0.8301292657852173
+"Is there any compensation mechanism or right to claim for the Contractor in case of market shortage or unavailability of materials, equipment and/or labor, beyond the Contractor's control?",6f9bb0aa-34ce-4f1d-a0da-53014e83bdb0,['17.1.4'],NO_MATCH,0.7508877515792847
+"Is there a Dispute Adjudication Board or Dispute Resolution Board, or similar mechanism?",651537e8-c5ad-42b0-8216-a59611faf87a,['19.5'],NO_MATCH,0.7729910612106323
+How is the Dispute Adjudication Board or Dispute Resolution Board formed?,331d8f2a-f74e-4fe2-80bb-a01c79554e3c,"['19.6.3', '19.5']",NO_MATCH,0.6981515288352966
+"Are the decisions taken by the Dispute Adjudication Board or Dispute Resolution Board immediately affordable? If a dispute persists after the Board's decision, what is the next step (is it Arbitration)?",2b7d2b09-7f1e-423e-885d-279172952c1a,"['19.5', '19.6.3']",PARTIAL_MATCHED,0.8023984432220459
+Is there a Parent Company Guarantee or Mother Company Guarantee?,5211df02-6930-4412-854a-7123718bfc2d,['19.1.1.17'],NO_MATCH,0.8451944589614868
+Does the Parent Company or Mother Company have the same rights as the Contractor for which it is a Guarantor?,b9c3f858-e339-45a9-a453-b4a499e0162f,[],ALL_MATCHED,0.8032363057136536
+Is the Parent Company Guarantee or Mother Company Guarantee limited to the Contractor's Overall Cap of Liability?,8f7ed4bd-3030-4a53-9c75-87e49d79e0b3,['19'],ALL_MATCHED,0.7569248080253601
+When does the Parent Company Guarantee or Mother Company Guarantee expire?,cc61cb9e-a35b-4689-9976-d5dc27c836cc,['19.1.1.17'],NO_MATCH,0.819550633430481
+Is there a Change in Law provision? Which changes in law are covered by it?,9df6530e-c925-4fe1-8f17-5dd56f4ed4a9,"['15.7.8', '16.1.1']",PARTIAL_MATCHED,0.8347276449203491
+Are any laws or types of law explicitly excluded from the Change in Law provision?,0e3d6bef-1869-481b-9805-06b722c289bc,"['16.1.1', '15.7.8']",NO_MATCH,0.6820187568664551
+Is there any information for how changes in tax law are handled?,b83a0c04-cdbd-4bcd-8aa6-027cb79630ad,"['16.1.2', '16.1.1']",NO_MATCH,0.6416307687759399
+Is there a Force Majeure provision?,d8f0760d-a68f-4411-91af-4072b9970933,[],ALL_MATCHED,0.550711989402771
+What is the definition of Force Majeure in this contract? Which events are considered Force Majeure? How is a Force Majeure event determined?,cbeeeb21-2c98-4475-a5e4-bf07bc298be7,[],ALL_MATCHED,0.6616097688674927
+Is the Contractor compensated for time and cost in the case of a Force Majeure event? How is a Force Majeure event determined?,87fc39ec-4629-4dba-b20d-7afca6b8cd65,"['15.7.8', '15.7.4', '15.6.2']",NO_MATCH,0.7547985315322876
+Is a pandemic or epidemic event considered a Force Majeure event as defined in this contract?,1ec45591-15b7-4d75-bda4-9ade86846a60,"['15.6.2', '15.7.4']",NO_MATCH,0.7434350252151489
+What is the Design Review and Approval Process? I need to know the different actors and stakeholders that are clearly identified in the Design Review and Approval Process.,95744120-1114-4082-9b69-dd9d9e581185,"['4.3', '3.1.2', '4.3.4.5']",PARTIAL_MATCHED,0.6455650329589844
+Are deadlines and timeframes clearly specified in the Design Review and Approval Process?,adac6716-aaef-4794-b419-e883fdafbe71,"['3.1.5', '3.1.5.2', '3.1.2']",PARTIAL_MATCHED,0.811843991279602
+"If third parties other than OPG (the Client) and the Contractor are involved in the Design Review and Approval process, is their timeline for review and approval concurrent with the Client's timeline?",53f93c5b-9b83-47c3-988d-d78bdfcea988,"['3.1.5', '3.1.5.2', '3.1.2']",NO_MATCH,0.7795257568359375
+"If approval of a Design is not provided within the timeframe explicited for Design Review and Approval Process, can the Contractor proceed? Is there a provision for Tacit Approval?",897961a4-c185-4d6b-a144-b0f7bc3853d5,"['3.1.5', '3.1.2', '3']",PARTIAL_MATCHED,0.6770809888839722
+Is there compensation or a right to claim both time (delay) and cost for the Contractor if the Client is late in Design Approval or Validation?,c82582ff-1881-46cf-880d-0621fe33e3d6,"['19A.2.2', '19.2.8', '15.15']",PARTIAL_MATCHED,0.776252806186676
+Does the Contractor have the Right to Suspend the Work? Under what conditions? Is this Right to Suspend the Work related to a Client Default? Does the contractor have compensation or a right to claim for both time and cost for suspended work?,393bb19e-f840-4345-93a0-8bf6b9903ea1,"['19.2.8', '19.4', '20.4']",PARTIAL_MATCHED,0.7976446151733398
+Is this Right to Suspend the Work related to a Client Default?,ba6194e9-e43a-464d-9534-702ef14fd1aa,"['19.4', '19.2.8', '19.2']",ALL_MATCHED,0.7288904190063477
+Does the contractor have compensation or a right to claim for both time and cost for suspended work?,6e4456a1-4931-435a-ad81-02fa594200a4,"['19.2.8', '19.4', '15.9']",PARTIAL_MATCHED,0.8022947311401367
+Does the Contractor have the right to compensation for delays in obtaining permit approvals?,7905974d-5ac6-4deb-8e80-64ced65e2d20,"['19A.2.2', '15.7.4', '5.5.8']",PARTIAL_MATCHED,0.8542601466178894
+Can the Contractor claim time extensions for delays in permit approvals from third parties?,5c73e82d-c759-484c-88ff-f7f0c515f7d4,"['3.1.2', '4.3.4.5', '15.9']",NO_MATCH,0.8498814702033997
+Is the Contractor entitled to cost reimbursement for permit approval delays?,da755915-ea6c-44a2-bda1-4727080edbeb,"['15.7.4', '8.1.2', '15.9']",PARTIAL_MATCHED,0.8769179582595825
+"Which third parties, agencies, or authorities are involved in the permit approval process?",edf92f52-e226-48b3-b235-3ac3bc148d63,"['6.1', '4.3', '4.3.9']",PARTIAL_MATCHED,0.6962370872497559
+What is the process for obtaining and delivering approved permits for construction work?,d167b1e7-4c45-4417-bd51-66c925c08468,"['4.3', '5.6', '5.7']",PARTIAL_MATCHED,0.8182088136672974
+What is the permit approval process for this project?,252be7c6-cb40-4d94-ab45-601481a23a61,"['4.3', '5.6', '4.3.9']",PARTIAL_MATCHED,0.8211460709571838
+What are the deadlines and timeframes for each permit in the approval process?,ef951116-4eaa-4d15-9861-3fb0f3279cd7,"['4.4', '5.7']",PARTIAL_MATCHED,0.6582465171813965
+Which permits are required to be obtained or approved for this project?,61e95fc4-bd2c-43b1-aeaf-13f458cb1d91,"['4.3.9', '5.6']",PARTIAL_MATCHED,0.6764196157455444
+Who is responsible for obtaining each permit required for the project?,32a42ce4-4dbd-4907-8481-9d173fe25134,"['5.6', '4.3.9', '4.3']",PARTIAL_MATCHED,0.8012608885765076
+"Which third parties, agencies, and authorities are involved in the permit approval process?",,,NO_MATCH,
+What is the procedure for delivering approved permits once obtained?,e222bc69-ca6b-401a-bf8a-e86c6a055218,"['4.3', '5.6', '3.1.5.2']",PARTIAL_MATCHED,0.8112816214561462
+How are land parcels and Right of Way defined in the contract?,01ba40b2-e751-4b3d-a16e-084155d14d07,"['2.1.1', '5.4']",PARTIAL_MATCHED,0.6489623785018921
+Does the contract specify clear dates of availability for each land parcel?,1cd3a385-147c-4049-a0a0-678d031a0425,"['20.7.4', '20.7.6', '5.10']",PARTIAL_MATCHED,0.8135330080986023
+Does the contract specify clear dates of return for each land parcel?,b6a9966d-be44-48cc-a09f-2f078de4b549,"['20.7.4', '5.10', '20.7.6']",PARTIAL_MATCHED,0.80500328540802
+Does the Client have access to all land parcels required for the project?,1e3601d4-5ee9-4f8d-931f-a7dcbe9093f3,"['5.4', '2.1.1', '20.7.6']",PARTIAL_MATCHED,0.7786113619804382
+Does the Client have access to all Right of Way areas needed for the project?,8d2f7d9f-3b97-4649-bd3d-6e0d01e93ab4,"['14', '5.8.5', '2.1.1']",NO_MATCH,0.5247275233268738
+Is the project site free from physical obstructions?,d58f0140-6eea-4c32-9c1c-ff7278b7039a,['5.8.2'],ALL_MATCHED,0.7524547576904297
+Are there occupants on any land parcels that might affect project access?,4a0a0b38-827b-4ee4-bf24-ceb0663eca99,"['2.1.1', '3.5']",NO_MATCH,0.7311756014823914
+Are there any third-party rights or easements affecting the project land?,9c3d46c2-5e36-45ba-ad2f-d248817ca1fc,"['2.1.1', '4.3.9', '5.8.5']",NO_MATCH,0.809907078742981
+What warranties are required in this contract?,b092aabb-e45e-4358-8169-07577d18bc58,[],ALL_MATCHED,0.8413747549057007
+What is the duration of each warranty specified in the contract?,edbb09dd-0fe4-4b09-9df6-e9896f03a7b8,[],ALL_MATCHED,0.7463744282722473
+Is there a Defect Liability Period specified in the contract?,22d7e8fd-b689-4dcc-8fc9-e0953179823d,[],ALL_MATCHED,0.8462790250778198
+What is the duration of the Defect Liability Period in the contract?,78818203-275c-4c1c-8a2b-271705e83443,[],ALL_MATCHED,0.766316294670105
+Are there any limits to the Defect Liability Period in the contract?,84fdbafa-1540-4ab6-8c27-e2f0176d6d47,[],ALL_MATCHED,0.8199560046195984
+What are the contractor's warranty obligations under this contract?,4f6e9d46-28eb-4a45-bcc2-824f3e2effd7,[],ALL_MATCHED,0.7494913339614868
+What explicit Waiver of Rights or Waiver of Claim provisions exist in this contract?,0fd3ffd8-f3ad-4f20-a325-862aa3d816cc,['25.3'],NO_MATCH,0.8250274658203125
+Does the contract contain language that causes the Contractor to waive compensation or indemnification rights?,acb1c6a0-90e3-4b59-926a-7dd3e3a0103b,"['17.1.1', '17.6']",PARTIAL_MATCHED,0.8405989408493042
+Are there provisions in the contract that cause the Contractor to lose the right to claim for additional time or costs?,b69c1129-6b9d-4b3d-b627-7d86fe9bd1bc,['19.4'],NO_MATCH,0.857705295085907
+"What are the Performance Bond requirements, value, and percentage in this contract?",c9a8f33c-dce6-4c4c-8038-ad989466060e,[],ALL_MATCHED,0.7260228395462036
+What other bonds or securities are required in this contract and what are their values?,74977421-011d-4947-9644-2b4481084d55,[],ALL_MATCHED,0.6607591509819031
+"Are bonds and securities included in the Aggregate/Overall Cap of Liability, and how does the cap compare to their combined value?",cc2236ea-a6ae-4e2b-abae-8ea9a28ab836,[],ALL_MATCHED,0.8248986005783081
+What are the primary payment mechanisms and conditions specified in this contract?,907a0c2a-890e-45c3-af1c-211b22cae878,[],ALL_MATCHED,0.723117470741272
+"Does the contract provide for payment advances upon Commercial Close or contract signature, and what are the terms?",501deedb-b8d4-4fbe-9ad6-fb3e7a1071cd,['7'],NO_MATCH,0.6338688731193542
+"What is the payment frequency and structure (milestone-based, monthly, or annual) in this contract?",e5f25982-bddb-4890-b314-6d9d75d9d614,"['10A.4.4', '10A.4.2']",NO_MATCH,0.778590202331543
+Is the Contractor required to provide funding or financial participation under this contract?,41eb2c03-07b7-4f72-812a-4d0b4c8becc8,[],ALL_MATCHED,0.6502367258071899
+What specific conditions or requirements must the Contractor meet to receive payment?,6a25e9b3-11ee-4da7-bd49-92842941dcd0,[],ALL_MATCHED,0.6567139625549316
+Does the Contractor have the right to claim time extensions for concurrent delays under this contract?,a97c0d35-f2f2-4607-9f2e-a92e47b8d521,"['15.9', '3.1.2', '19.2.8']",NO_MATCH,0.8322634696960449
+Does the Contractor have the right to claim cost compensation for concurrent delays under this contract?,7d4b7b3e-b09c-4c3c-9c8c-0ed1864a4bc0,"['19A.2.2', '15.9', '15.15']",NO_MATCH,0.6950058937072754
+What rights does the Contractor have to claim time extensions for delays beyond its control or responsibility?,1020a609-d5bf-4cc1-b1dc-07252b1d2f8b,"['15.9', '3.1.2']",NO_MATCH,0.8172644376754761
+What rights does the Contractor have to claim cost compensation for delays beyond its control or responsibility?,72d6e40c-ed65-4951-b674-98f54c66a027,"['15.9', '19A.2.2']",NO_MATCH,0.7927561402320862
+What variation procedures or contractual change mechanisms are defined in this contract?,6ac9ae0a-3d1d-4133-ae9e-7700f5175aa9,['16.2.4'],NO_MATCH,0.832886815071106
+What is the process for implementing variations or contractual changes under this contract?,b2bcf287-afd4-452f-b1a1-dcffeb03d1bd,"['16.2.4', '16.2']",PARTIAL_MATCHED,0.7781668901443481
+Does the contract require mutual approval from both Contractor and Client for variations or changes?,212a31f8-3a34-4ecc-94a8-346e5dd7ddca,"['16.2', '16.2.4', '1A.2']",PARTIAL_MATCHED,0.7661330103874207
+Can the Client unilaterally instruct or approve variations or changes that the Contractor must accept?,29484145-a589-4f2f-9940-544089fb68f2,"['16.2', '16.2.4', '16.1.1']",PARTIAL_MATCHED,0.6934360265731812
+Does the contract allow variations or changes to be amended after provisional acceptance or approval?,b8b847cc-0b0d-4bfa-9466-73813d5fd9fd,"['1A.2', '16.2.4']",PARTIAL_MATCHED,0.6762441396713257
+"Does this contract interface, integrate, or interact with other contracts or third-party entities?",573cbd2b-18af-4611-8b62-a0c4e2d10f7a,"['17.5', '25.8']",NO_MATCH,0.694713830947876
+"Who is assigned responsibility for managing interfaces, integrations, or interactions with other contracts or third parties?",3c15f2c1-8ca6-42ae-911f-18d388e79063,"['5.5', '4.5.1.1', '8.1.2']",PARTIAL_MATCHED,0.8384717702865601
+"What liabilities does the Client have regarding contract interfaces, integrations, or interactions?",8ddb4f41-5932-4be2-b0f7-c303c40f5ff6,"['19.2.12', '17.1.4']",NO_MATCH,0.7495091557502747
+Is the Contractor expected to coordinate with parties to contracts other than this contract?,8870af52-93e8-4e2a-b820-c0942b948c21,"['7', '8.1.2', '7']",NO_MATCH,0.6246147155761719
+What payment retention or equivalent mechanisms are specified in this contract?,41f353b7-b7eb-4b93-8adb-064a7bbb7280,[],ALL_MATCHED,0.6973457336425781
+What is the level or percentage of holdback required in this contract?,1c6d4779-b54a-49bb-8148-ea5ffdd8a431,['16.1.6'],NO_MATCH,0.7084871530532837
+Does the contract require any payment retention beyond the statutory holdback?,b50f8283-dc2c-4911-9c01-0a83efce139a,['10A.2.3'],NO_MATCH,0.6915565729141235
+Does the contract allow payment retentions to be replaced by bonds or other financial instruments?,c149cb75-439c-429e-9bd1-863dd025aa77,[],ALL_MATCHED,0.7519241571426392
+What is the contractual status of information and data provided by the Client - is it classified as Reliant or Rely-Upon data?,185e2798-7b13-4859-a9d0-484bb9ad29f6,['1.3'],NO_MATCH,0.6829019784927368
+"Does the contract allow the Contractor to rely on Client-provided data for design development, price estimation, and engineering?",022c5ad1-b2e6-4a30-b304-6b6be87f2a8b,"['20.12', '7', '3.1.8']",NO_MATCH,0.7145276069641113
+What guarantees or warranties does the Client provide regarding the data and information they furnish to the Contractor?,c4165031-f216-4e3e-8f9f-76d8318910d3,['1A.3'],NO_MATCH,0.6492617130279541
+What are the Contractor's rights or remedies if Client-provided data proves to be inaccurate or incomplete?,81869faf-aad9-4356-86c3-8ff92a931c01,"['5.5.9', '23.2']",NO_MATCH,0.653736412525177
+Who bears responsibility for third-party claims related to the project under this contract?,3440897f-be02-4492-8b25-fe5001e0414f,"['17.5', '19.2.12']",ALL_MATCHED,0.8484654426574707
+What specific third-party claim responsibilities are assigned to the Client in this contract?,22a95a4f-d430-4afc-9a05-dbd05183f188,"['25.8', '17.5']",PARTIAL_MATCHED,0.7538405656814575
+Does the contract require the Client to indemnify the Contractor against third-party claims?,c0bf8ad7-e83c-4543-abe8-7d80851e2156,"['25.8', '17.6', '17.5']",PARTIAL_MATCHED,0.7887682914733887
+What are the limitations or conditions on indemnification for third-party claims in this contract?,4b616f85-6db7-4b20-ae06-7a531993db94,"['25.8', '17.5', '17.1.1']",PARTIAL_MATCHED,0.8976594805717468
+What arbitration provisions or elections are included in this contract?,226fb640-d291-4e4b-b852-04aafe6867de,['19.6.3'],NO_MATCH,0.7345703840255737
+What is the specified arbitration process or procedure in this contract?c,,,NO_MATCH,
+Does the contract allow for resolution of disputes through local courts or tribunals instead of arbitration?,93ea9df0-a227-49f6-848c-22ad7dcde662,"['19.6.3', '19.4.4', '19.5']",PARTIAL_MATCHED,0.69908607006073
+Does the contract permit the use of jury courts or grand jury courts as alternatives to arbitration?,e81adfcb-d660-4493-b43a-46c157790150,"['19.6.3', '5.4.5.2']",PARTIAL_MATCHED,0.7295540571212769
